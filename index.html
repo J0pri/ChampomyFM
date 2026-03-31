@@ -39,6 +39,8 @@
 
   <script>
     let min, max, current;
+    let phase = 'euros';
+    let finalEuros = null;
     let attempts = 0;
     let timeLeft = 25;
     let timerInterval;
@@ -65,6 +67,7 @@
 
       attempts = 0;
       timeLeft = 25;
+      phase = 'euros';
       startTimer();
       guess();
     }
@@ -81,20 +84,55 @@
       }, 1000);
     }
 
+    function checkPhaseTransition() {
+      if (phase === 'euros') {
+        let minE = Math.floor(min / 100);
+        let maxE = Math.floor(max / 100);
+
+        if (minE === maxE) {
+          // passage automatique aux centimes
+          finalEuros = minE;
+          min = finalEuros * 100;
+          max = finalEuros * 100 + 99;
+          phase = 'centimes';
+        }
+      }
+    }
+
     function guess() {
-      current = Math.floor((min + max) / 2);
+      checkPhaseTransition();
+
+      if (phase === 'euros') {
+        let minE = Math.floor(min / 100);
+        let maxE = Math.floor(max / 100);
+        let midE = Math.floor((minE + maxE) / 2);
+        current = midE * 100;
+      } else {
+        current = Math.floor((min + max) / 2);
+      }
+
       document.getElementById('result').innerText = toEuros(current) + " €";
       attempts++;
       document.getElementById('counter').innerText = "Essais : " + attempts;
     }
 
     function higher() {
-      min = current + 1;
+      if (phase === 'euros') {
+        let euros = Math.floor(current / 100);
+        min = (euros + 1) * 100;
+      } else {
+        min = current + 1;
+      }
       guess();
     }
 
     function lower() {
-      max = current - 1;
+      if (phase === 'euros') {
+        let euros = Math.floor(current / 100);
+        max = (euros * 100) - 1;
+      } else {
+        max = current - 1;
+      }
       guess();
     }
 
@@ -103,14 +141,12 @@
       document.getElementById('result').innerText = "🎉 Prix trouvé : " + toEuros(current) + " €";
     }
 
-    // clavier rapide
     document.body.addEventListener('keydown', function(e) {
       if (e.key === 'ArrowUp') higher();
       if (e.key === 'ArrowDown') lower();
       if (e.key === 'Enter') found();
     });
 
-    // Service worker (PWA)
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
