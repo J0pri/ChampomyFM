@@ -86,16 +86,15 @@
 
     function checkPhaseTransition() {
       if (phase === 'euros') {
-        let minE = Math.floor(min / 100);
-        let maxE = Math.floor(max / 100);
-
-        if (minE === maxE) {
-          // passage automatique aux centimes
-          finalEuros = minE;
+        // on passe aux centimes uniquement quand il reste moins de 1€ d'écart
+        if ((max - min) < 100) {
+          finalEuros = Math.floor(min / 100);
           min = finalEuros * 100;
           max = finalEuros * 100 + 99;
           phase = 'centimes';
         }
+      }
+    }
       }
     }
 
