@@ -1,15 +1,24 @@
 {
   "name": "ChampomyFM",
   "short_name": "ChampomyFM",
-  "start_url": ".",
+  "description": "Le juste prix à une 🫧 près",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#0d0d0d",
+  "theme_color": "#c9a84c",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
