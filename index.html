@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>ChampomyFM</title>
+
+  <!-- PWA config -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 30px; }
+    input { padding: 10px; margin: 5px; width: 120px; }
+    button { padding: 15px 25px; margin: 10px; font-size: 18px; border-radius: 10px; }
+    #result { font-size: 48px; margin-top: 20px; }
+    #timer { font-size: 28px; margin-top: 10px; }
+    #counter { margin-top: 10px; font-size: 18px; }
+  </style>
+</head>
+<body>
+  <h1>🍾 ChampomyFM</h1>
+
+  <div id="setup">
+    <input type="number" step="0.01" id="min" placeholder="Min €">
+    <input type="number" step="0.01" id="max" placeholder="Max €">
+    <br>
+    <button onclick="startGame()">Commencer</button>
+  </div>
+
+  <div id="game" style="display:none;">
+    <div id="timer">⏱️ 25</div>
+    <div id="result"></div>
+    <div id="counter">Essais : 0</div>
+
+    <button onclick="higher()">⬆️ Plus</button>
+    <button onclick="lower()">⬇️ Moins</button>
+    <button onclick="found()">✅ Trouvé</button>
+  </div>
+
+  <script>
+    let min, max, current;
+    let attempts = 0;
+    let timeLeft = 25;
+    let timerInterval;
+
+    function toCents(value) {
+      return Math.round(value * 100);
+    }
+
+    function toEuros(value) {
+      return (value / 100).toFixed(2);
+    }
+
+    function startGame() {
+      min = toCents(parseFloat(document.getElementById('min').value));
+      max = toCents(parseFloat(document.getElementById('max').value));
+
+      if (isNaN(min) || isNaN(max) || min >= max) {
+        alert("Intervalle invalide");
+        return;
+      }
+
+      document.getElementById('setup').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+
+      attempts = 0;
+      timeLeft = 25;
+      startTimer();
+      guess();
+    }
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById('timer').innerText = "⏱️ " + timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          document.getElementById('result').innerText = "⛔ Temps écoulé !";
+        }
+      }, 1000);
+    }
+
+    function guess() {
+      current = Math.floor((min + max) / 2);
+      document.getElementById('result').innerText = toEuros(current) + " €";
+      attempts++;
+      document.getElementById('counter').innerText = "Essais : " + attempts;
+    }
+
+    function higher() {
+      min = current + 1;
+      guess();
+    }
+
+    function lower() {
+      max = current - 1;
+      guess();
+    }
+
+    function found() {
+      clearInterval(timerInterval);
+      document.getElementById('result').innerText = "🎉 Prix trouvé : " + toEuros(current) + " €";
+    }
+
+    // clavier rapide
+    document.body.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowUp') higher();
+      if (e.key === 'ArrowDown') lower();
+      if (e.key === 'Enter') found();
+    });
+
+    // Service worker (PWA)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
