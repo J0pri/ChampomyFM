@@ -591,8 +591,11 @@
   function higher() {
     if (gameOver) return;
     if (phase === 'euros') {
+      // Le prix est strictement au-dessus de l'euro affiché
       const euros = Math.floor(current / 100);
       minCents = (euros + 1) * 100;
+      // S'assurer que maxCents couvre bien tous les centimes de son euro
+      maxCents = Math.floor(maxCents / 100) * 100 + 99;
     } else {
       minCents = current + 1;
     }
@@ -603,8 +606,11 @@
   function lower() {
     if (gameOver) return;
     if (phase === 'euros') {
+      // Le prix est strictement en dessous de l'euro affiché
       const euros = Math.floor(current / 100);
       maxCents = euros * 100 - 1;
+      // S'assurer que minCents part bien du début de son euro
+      minCents = Math.floor(minCents / 100) * 100;
     } else {
       maxCents = current - 1;
     }
