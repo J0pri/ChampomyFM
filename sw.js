@@ -1,4 +1,4 @@
-const CACHE_NAME = 'champomyfm-v4';
+const CACHE_NAME = 'champomyfm-v5';
 const ASSETS = [
   '/',
   '/index.html',
